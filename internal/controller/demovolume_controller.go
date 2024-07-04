@@ -67,25 +67,31 @@ func (r *DemoVolumeReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 		r.Status().Update(ctx, volume)
 	}
 
+	l.Info("****************** CREATE")
+	r.reconcilePVC(ctx, volume, l)
+
 	return ctrl.Result{}, nil
 }
 
 func (r *DemoVolumeReconciler) reconcilePVC(ctx context.Context, volume *demov1.DemoVolume, l logr.Logger) error {
 	pvc := &v1.PersistentVolumeClaim{}
 	err := r.Get(ctx, types.NamespacedName{Name: volume.Name, Namespace: volume.Namespace}, pvc)
-	if err != nil {
-		l.Info("PVC found")
+	/**if err != nil {
+		l.Info("PVC found: ", "err", err)
 		return nil
-	}
+	}**/
 
 	if !errors.IsNotFound(err) {
+		l.Info("##### ERROR")
 		return err
 	}
 
 	l.Info("PVC not found")
 
-	storageClass := "default"
+	storageClass := ""
 	storageRequest, _ := resource.ParseQuantity(fmt.Sprintf("%dGi", volume.Spec.Size))
+
+	l.Info("**** Storage Request", "storageRequest", storageRequest, "volume", volume)
 
 	pvc = &v1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
@@ -95,7 +101,7 @@ func (r *DemoVolumeReconciler) reconcilePVC(ctx context.Context, volume *demov1.
 		Spec: v1.PersistentVolumeClaimSpec{
 			StorageClassName: &storageClass,
 			AccessModes:      []v1.PersistentVolumeAccessMode{"ReadWriteOnce"},
-			Resources: v1.ResourceRequirements{
+			Resources: v1.VolumeResourceRequirements{
 				Requests: v1.ResourceList{"storage": storageRequest},
 			},
 		},
