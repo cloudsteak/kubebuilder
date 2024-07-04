@@ -1,0 +1,23 @@
+# permissions for end users to view demovolumes.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: kubebuilder
+    app.kubernetes.io/managed-by: kustomize
+  name: demovolume-viewer-role
+rules:
+- apiGroups:
+  - demo.demo.operator
+  resources:
+  - demovolumes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - demo.demo.operator
+  resources:
+  - demovolumes/status
+  verbs:
+  - get
