@@ -5,6 +5,7 @@
 domain: cloud.cloudsteak.com
 layout:
 - go.kubebuilder.io/v4
+multigroup: true
 projectName: kubebuilder
 repo: github.com/cloudsteak/kubebuilder.git
 resources:
@@ -13,4 +14,13 @@ resources:
   kind: Pod
   path: k8s.io/api/core/v1
   version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: cloud.cloudsteak.com
+  group: api
+  kind: Configuration
+  path: github.com/cloudsteak/kubebuilder.git/api/api/v1alpha1
+  version: v1alpha1
 version: "3"
