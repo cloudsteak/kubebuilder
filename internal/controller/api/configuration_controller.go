@@ -47,9 +47,17 @@ type ConfigurationReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.18.2/pkg/reconcile
 func (r *ConfigurationReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	l := log.FromContext(ctx)
 
-	// TODO(user): your logic here
+	config := &apiv1alpha1.Configuration{}
+	err := r.Get(ctx, req.NamespacedName, config)
+
+	if err != nil {
+		l.Error(err, "unable to fetch Configuration")
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+
+	l.Info("Reconciling Configuration", "Name", config.Name, "Namespace", config.Namespace, "Type", config.Spec.Type, "Setting", config.Spec.Setting)
 
 	return ctrl.Result{}, nil
 }
